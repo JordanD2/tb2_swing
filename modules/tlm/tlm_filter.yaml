@@ -1,0 +1,10 @@
+tlm_filter: !module
+    template: uvm_component.jte
+    pkg: undef_pkg
+    type: tlm_filter#(T)
+    superType: uvm_subscriber#(T)
+    name: filter
+    inputPorts:
+      - {name: analysis_export, type: T, comment: "Accepts inputs to the filter"}
+    outputPorts:
+      - {name: filtered_port, type: T, comment: "Emits filtered txns"}

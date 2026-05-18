@@ -1,0 +1,11 @@
+tlm_filter2: !module
+    template: uvm_component.jte
+    pkg: undef_pkg
+    type: tlm_pass_no_pass_filter#(T)
+    superType: uvm_subscriber#(T)
+    name: filter
+    inputPorts:
+      - {name: analysis_export, type: T, comment: "Accepts inputs to the filter"}
+    outputPorts:
+      - {name: pass_port, type: T, comment: "Emits txns that pass the filter"}
+      - {name: fail_port, type: T, comment: "Emits txns that fail the filter"}

@@ -1,0 +1,7 @@
+---
+uvm_env: !module
+    name: my_e
+    template: uvm_component.jte
+    pkg: uvm_pkg
+    type: uvm_env
+    superType: uvm_component

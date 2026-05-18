@@ -1,0 +1,6 @@
+**/.DS_Store
+/target/
+/modules/custom/
+/nb-configuration.xml
+/dependency-reduced-pom.xml
+/jte-classes/

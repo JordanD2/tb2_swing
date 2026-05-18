@@ -1,0 +1,9 @@
+---
+uvm_subscriber: !module
+    template : uvm_component.jte
+    pkg: uvm_pkg
+    type: uvm_subscriber#(T)
+    superType: uvm_component
+    name: cov
+    inputPorts:
+      - {name: analysis_export, type: T}

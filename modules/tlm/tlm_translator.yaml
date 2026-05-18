@@ -1,0 +1,10 @@
+tlm_translator: !module
+    template: uvm_component.jte
+    pkg: undef_pkg
+    type: tlm_translator#(T,U)
+    superType: uvm_subscriber#(T)
+    name: translator
+    inputPorts:
+      - {name: analysis_export, type: T, comment: "Accepts inputs of type A"}
+    outputPorts:
+      - {name: output_port, type: U, comment: "Emits converted output of type B"}

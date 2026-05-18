@@ -1,0 +1,23 @@
+---
+uvm_monitor: !module &uvm_monitor
+    template: uvm_component.jte
+    pkg: uvm_pkg
+    type: uvm_monitor
+    superType: uvm_component
+    outputPorts:
+      - {name: analysis_port, type: T}
+   
+uvm_agent: !module
+    template: uvm_component.jte
+    pkg: uvm_pkg
+    type: uvm_agent
+    superType: uvm_component
+    name: agt
+    outputPorts:
+      - {name: analysis_port, type: T}
+    submodules:
+      - <<: *uvm_monitor
+        name: mon
+    connections:
+      - {srcPath: mon.analysis_port, dstPath: analysis_port}
+    
