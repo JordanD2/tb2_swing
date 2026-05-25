@@ -95,6 +95,7 @@ public class ConfigAssignEditor extends JDialog {
             Logger.getLogger(ConfigFieldEditor.class.getName()).log(Level.INFO, String.format("Updating config fields for %s...", target.type));
             target.configAssigns.clear();
             target.configAssigns.addAll(model.getDataVector().stream().map((t) -> getConfigAssignFromRowData(t.toArray())).toList());
+            target.canvas.modified = true;
             dispose();
         });
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

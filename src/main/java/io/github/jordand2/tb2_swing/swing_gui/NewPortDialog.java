@@ -167,6 +167,7 @@ public class NewPortDialog extends javax.swing.JDialog {
             }
         }
         canvas.repaint();
+        canvas.modified = true;
         this.dispose();
     }//GEN-LAST:event_okButtonActionPerformed
 

@@ -132,6 +132,7 @@ public class DrawModule implements Cloneable {
                 sub.reindexPorts(includeSubmodules);
             }
         }
+        canvas.modified = true;
     }
     
     public DrawPort getPort(String relPath) {
@@ -181,6 +182,7 @@ public class DrawModule implements Cloneable {
             submodules.add(module);
         }
         module.parent = this;
+        canvas.modified = true;
     }
     
     public void deleteSubmodule(DrawModule module) {
@@ -188,6 +190,7 @@ public class DrawModule implements Cloneable {
             submodules.remove(module);
             connections.removeIf((conn) -> (conn.sourcePort.parent == module || conn.destPort.parent == module));
         }
+        canvas.modified = true;
     }
     
     /**
@@ -203,6 +206,7 @@ public class DrawModule implements Cloneable {
         } else {
             addPort(name, dataType, type, outputPorts.size());
         }
+        canvas.modified = true;
     }
     
     /**
@@ -221,6 +225,7 @@ public class DrawModule implements Cloneable {
             outputPorts.add(new DrawPort(canvas, this, type, name, dataType));
             outputPorts.getLast().idx = portIndex;
         }
+        canvas.modified = true;
     }
     
     /**
@@ -237,6 +242,7 @@ public class DrawModule implements Cloneable {
         if (this.parent != null) {
             parent.connections.removeIf((conn) -> conn.sourcePort == port || conn.destPort == port);
         }
+        canvas.modified = true;
     }
     
     public String getPathTo(DrawPort port) {

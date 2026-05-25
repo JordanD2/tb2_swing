@@ -18,11 +18,16 @@ import io.github.jordand2.tb2_swing.core.Module;
 import io.github.jordand2.tb2_swing.yamlio.YamlReader;
 import io.github.jordand2.tb2_swing.yamlio.YamlWriter;
 import io.github.jordand2.tb2_swing.jte_render.ModuleRenderer;
+import java.awt.Desktop;
+import java.awt.desktop.QuitStrategy;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -58,10 +63,15 @@ public class Tb2Swing extends javax.swing.JFrame {
         exitBtn = new javax.swing.JButton();
         canvas = new Canvas();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("TB2");
         setBounds(new java.awt.Rectangle(0, 25, 1000, 800));
         setMinimumSize(new java.awt.Dimension(525, 200));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         addBtn.setMnemonic('A');
         addBtn.setText("Add");
@@ -165,12 +175,13 @@ public class Tb2Swing extends javax.swing.JFrame {
                 
                 YamlWriter writer = new YamlWriter();
                 writer.writeModule(jfc.getSelectedFile(), top);
+                c.modified = false;
             } 
         }
     }//GEN-LAST:event_saveBtnActionPerformed
     
     private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-        System.exit(0);
+        formWindowClosing(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void canvasMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_canvasMouseWheelMoved
@@ -275,13 +286,35 @@ public class Tb2Swing extends javax.swing.JFrame {
             } 
         }
     }//GEN-LAST:event_renderBtnActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        logger.log(Level.INFO, "Closing window");
+        
+        if (canvas instanceof Canvas c && c.modified && !c.modules.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this, "Save before exit?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                saveBtnActionPerformed(new ActionEvent(evt.getSource(), ActionEvent.ACTION_PERFORMED, "Save"));
+                
+                if (c.modified) {
+                    return; // cancel exit request
+                }
+            }
+        }
+        this.dispose();
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
     
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Tb2Swing().setVisible(true));
+        Tb2Swing app = new Tb2Swing();
+        
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_STRATEGY)) {
+            Desktop.getDesktop().setQuitStrategy(QuitStrategy.CLOSE_ALL_WINDOWS);
+        }
+        
+        
+        java.awt.EventQueue.invokeLater(() -> app.setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

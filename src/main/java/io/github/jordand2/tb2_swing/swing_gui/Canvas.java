@@ -60,6 +60,8 @@ public class Canvas extends JPanel{
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Tb2Swing.class.getName());
     
+    boolean modified = false;
+    
     final Deque<DrawModule> modules = new ArrayDeque<>();
     
     DrawModule selected = null;
@@ -182,6 +184,7 @@ public class Canvas extends JPanel{
                     }
                     modules.remove(selected);
                     selected = null;
+                    modified = true;
                     repaint();
                 }
             }
@@ -200,6 +203,7 @@ public class Canvas extends JPanel{
                         selected.parent.deleteSubmodule(selected);
                     }
                     selected = null;
+                    modified = true;
                     repaint();
                 }
             }
@@ -229,6 +233,7 @@ public class Canvas extends JPanel{
                             pasteBin.parent.addSubmodule(pasted);
                         }
                         pasteBin = pasted;
+                        modified = true;
                     } catch (CloneNotSupportedException ex) {
                         System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                     }
@@ -251,7 +256,7 @@ public class Canvas extends JPanel{
                             selected.parent.addSubmodule(dupe);
                         }
                         selected = dupe;
-                        
+                        modified = true;
                     } catch (CloneNotSupportedException ex) {
                         System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                     }
@@ -299,6 +304,9 @@ public class Canvas extends JPanel{
         DrawModule mod = new DrawModule(this, (DrawModule)(null), module);
         modules.add(mod);
         mod.reindexPorts(true);
+        if (modules.size() == 1) {
+            modified = false; // No modification if we've just loaded a module
+        }
         mod.layout();
         mod.resize();
         mod.location.x = getWidth ()*scaleFactor/2 - mod.size.x/2;
@@ -440,6 +448,7 @@ public class Canvas extends JPanel{
                         selected.parent.submodules.remove(selected);
                     }
                 }
+                modified = true;
                 
                 selected.location = selected.getModuleOffset().subtract(hoverModule.getModuleOffset());
                 hoverModule.addSubmodule(selected);
@@ -449,12 +458,16 @@ public class Canvas extends JPanel{
                 // TODO: simplify and/or add error checking
                 if (selectedPort.parent == hoverPort.parent) {
                     selectedPort.parent.connections.add(new DrawConnection(this, selectedPort.parent, selectedPort, hoverPort));
+                    modified = true;
                 } else if (selectedPort.parent == hoverPort.parent.parent) {
                     selectedPort.parent.connections.add(new DrawConnection(this, selectedPort.parent, selectedPort, hoverPort));
+                    modified = true;
                 } else if (selectedPort.parent.parent == hoverPort.parent) {
                     hoverPort.parent.connections.add(new DrawConnection(this, hoverPort.parent, selectedPort, hoverPort));
+                    modified = true;
                 } else if (hoverPort.parent.parent != null && selectedPort.parent.parent != null && selectedPort.parent.parent == hoverPort.parent.parent) {
                     selectedPort.parent.parent.connections.add(new DrawConnection(this, selectedPort.parent.parent, selectedPort, hoverPort));
+                    modified = true;
                 } else {
                     logger.log(Level.SEVERE, "Attempted to add bad connection!");
                 }

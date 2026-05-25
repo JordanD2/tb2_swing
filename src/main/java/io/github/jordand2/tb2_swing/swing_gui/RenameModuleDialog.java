@@ -112,6 +112,7 @@ public class RenameModuleDialog extends javax.swing.JDialog {
         target.name = nameField.getText();
         target.type = typeField.getText();
         canvas.repaint();
+        canvas.modified = true;
         this.dispose();
     }//GEN-LAST:event_okButtonActionPerformed
 

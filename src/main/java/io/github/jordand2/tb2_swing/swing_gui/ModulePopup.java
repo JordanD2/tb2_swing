@@ -185,6 +185,7 @@ public class ModulePopup extends JPopupMenu{
                 duplicated.location.translate(DUPLICATE_TRANSLATION, DUPLICATE_TRANSLATION);
                 if (canvas.selected.isTopModule()) {
                     canvas.modules.add(duplicated);
+                    canvas.modified = true;
                 } else {
                     canvas.selected.parent.addSubmodule(duplicated);
                 }
@@ -202,6 +203,7 @@ public class ModulePopup extends JPopupMenu{
             
             if (canvas.selected.isTopModule()) {
                 canvas.modules.remove(canvas.selected);
+                canvas.modified = true;
             } else {
                 canvas.selected.parent.deleteSubmodule(canvas.selected);
             }
@@ -227,6 +229,7 @@ public class ModulePopup extends JPopupMenu{
                         
                         if (canvas.selected == null) {
                             canvas.modules.add(pasted);
+                            canvas.modified = true;
                         } else {
                             canvas.selected.addSubmodule(pasted);
                         }
@@ -242,6 +245,7 @@ public class ModulePopup extends JPopupMenu{
         deleteItem.addActionListener((e) -> {
             if (canvas.selected.isTopModule()) {
                 canvas.modules.remove(canvas.selected);
+                canvas.modified = true;
             } else {
                 canvas.selected.parent.deleteSubmodule(canvas.selected);
             }

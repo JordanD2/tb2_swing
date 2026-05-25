@@ -37,6 +37,7 @@ public class CanvasPopup extends JPopupMenu{
                     new RealPoint(clickLocation).inverseScaleBy(parent.scaleFactor).add(parent.offset)
             );
             parent.modules.add(newModule);
+            parent.modified = true;
             newModule.resize();
             parent.repaint();
         });
@@ -51,6 +52,7 @@ public class CanvasPopup extends JPopupMenu{
             );
             mon.addPort("seen_port", "uvm_object", DrawPort.OUTPUT_PORT);
             parent.modules.add(mon);
+            parent.modified = true;
             mon.resize();
             parent.repaint();
         });
@@ -62,6 +64,7 @@ public class CanvasPopup extends JPopupMenu{
             );
             sbcrbr.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
             parent.modules.add(sbcrbr);
+            parent.modified = true;
             sbcrbr.resize();
             parent.repaint();
         });
@@ -74,6 +77,7 @@ public class CanvasPopup extends JPopupMenu{
             fil.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
             fil.addPort("filtered_port", "uvm_object", DrawPort.OUTPUT_PORT);
             parent.modules.add(fil);
+            parent.modified = true;
             fil.resize();
             parent.repaint();
         });
@@ -86,6 +90,7 @@ public class CanvasPopup extends JPopupMenu{
             fil.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
             fil.addPort("output_port", "uvm_object", DrawPort.OUTPUT_PORT);
             parent.modules.add(fil);
+            parent.modified = true;
             fil.resize();
             parent.repaint();
         });
@@ -98,6 +103,7 @@ public class CanvasPopup extends JPopupMenu{
             sb.addPort("obs_export", "uvm_object", DrawPort.INPUT_PORT);
             sb.addPort("exp_export", "uvm_object", DrawPort.INPUT_PORT);
             parent.modules.add(sb);
+            parent.modified = true;
             sb.resize();
             parent.repaint();
         });
