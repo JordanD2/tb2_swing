@@ -46,7 +46,7 @@ public class Canvas extends JPanel{
     final static int MOUSE_NAV_BUTTON    = MouseEvent.BUTTON2;
     final static int MOUSE_OPTION_BUTTON = MouseEvent.BUTTON3;
     
-    final static float DEFAULT_FONT_SIZE = 24.0f;
+    final static float DEFAULT_FONT_SIZE = 12.0f;
     final static double DEFAULT_SCALE_FACTOR = 1.0;
     final static double SCALE_STEP = 1.2;
     final static double MAX_SCALE_FACTOR = 20.0;

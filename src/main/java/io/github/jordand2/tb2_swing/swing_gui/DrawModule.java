@@ -45,8 +45,6 @@ public class DrawModule implements Cloneable {
     
     final static double ARROW_SIZE = 0.7;
     final static double ARROW_WIDTH = 1.2;
-//    final static double ARROW_SIZE = 7;
-//    final static double ARROW_WIDTH = 1.2;
     
     String name = "";
     String type = "";
@@ -475,7 +473,7 @@ public class DrawModule implements Cloneable {
         
         double xOffset = PORT_SIZE*2;
         for (int i = 0; i < numCols; i++) {
-            double yOffset = PORT_STRIDE + canvas.getStringDrawHeight(name);
+            double yOffset = PORT_STRIDE + canvas.getStringDrawHeight(name, 1.0f);
             
             for (DrawModule mod : drawCols[i]) {
                 mod.location.setLocation(xOffset, yOffset);
