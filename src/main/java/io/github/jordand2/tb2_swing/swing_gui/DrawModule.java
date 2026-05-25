@@ -338,19 +338,25 @@ public class DrawModule implements Cloneable {
         return valid;
     }
     
+    /**
+     * Automatically resizes this module and all its submodules. Resizing is performed starting
+     * from the deepest submodules and working up towards this module.
+     */
     public void resize() {
-        final double scaleFactor = canvas.scaleFactor;
         int longestOutput = 0;
         int longestInput = 0;
         
-        int nameWidth  = Math.max(canvas.getStringDrawWidth(name), canvas.getStringDrawWidth(type));
-        int nameHeight = canvas.getStringDrawHeight(name);
+        int nameWidth = Math.max(
+                canvas.getStringDrawWidth(name, 1.0f),
+                canvas.getStringDrawWidth(type, 1.0f)
+        );
+        int nameHeight = canvas.getStringDrawHeight(name, 1.0f);
         
         if (!outputPorts.isEmpty() && !hidePortLabels) {
-            longestOutput = outputPorts.stream().mapToInt((port) -> port.getLabelWidth()).max().getAsInt() + PORT_INSET*2;
+            longestOutput = outputPorts.stream().mapToInt((port) -> port.getLabelWidth(1.0f)).max().getAsInt() + (PORT_INSET*2);
         }
         if (!inputPorts.isEmpty() && !hidePortLabels) {
-            longestInput = inputPorts.stream().mapToInt((port) -> port.getLabelWidth()).max().getAsInt() + PORT_INSET*2;
+            longestInput = inputPorts.stream().mapToInt((port) -> port.getLabelWidth(1.0f)).max().getAsInt() + (PORT_INSET*2);
         }
         
         double farthestSubX = 0;
@@ -363,7 +369,7 @@ public class DrawModule implements Cloneable {
                     sub.resize();
                 }
 
-                double leftmostSubX = submodules.stream().mapToDouble( (sub) -> sub.location.x).min().getAsDouble() - longestInput - PORT_SIZE*2;
+                double leftmostSubX = submodules.stream().mapToDouble( (sub) -> sub.location.x).min().getAsDouble() - longestInput - (PORT_SIZE*2);
                 double topmostSubY  = submodules.stream().mapToDouble( (sub) -> sub.location.y).min().getAsDouble() - nameHeight*2;
                 
                 this.location.translate(leftmostSubX, topmostSubY);
@@ -376,15 +382,30 @@ public class DrawModule implements Cloneable {
             }
         }
         
-        // TODO logic for automatically sizing the component, based on the port label lengths
-        int minWidth = Math.max(Math.max((int)(farthestSubX*scaleFactor), longestInput) + longestOutput, nameWidth) + PORT_SIZE*2;
+        int minWidth = (int)Math.max(
+                Math.max(
+                        farthestSubX,
+                        longestInput
+                ) + longestOutput,
+                nameWidth
+        ) + PORT_SIZE*2;
         
-        int minHeight = Math.max((int)(farthestSubY*scaleFactor) + nameHeight*2, Math.max(outputPorts.size(), inputPorts.size()) * PORT_STRIDE + nameHeight*3);
+        int minHeight = (int)Math.max(
+                (farthestSubY + nameHeight*2),
+                (Math.max(
+                        outputPorts.size(),
+                        inputPorts.size()
+                ) * PORT_STRIDE) + (nameHeight*3)
+        );
             
-        size.x = minWidth / scaleFactor;
-        size.y = minHeight / scaleFactor;
+        size.x = minWidth;
+        size.y = minHeight;
     }
     
+    /**
+     * Automatically lays out this component and all of its submodules. Layout is performed
+     * starting with the deepest subcomponent and working up toards this module.
+     */
     public void layout () {
         if (submodules.isEmpty() || hideInternals) {
             return;  // early exit
@@ -452,13 +473,13 @@ public class DrawModule implements Cloneable {
             drawCols[col].add(sub);
         }
         
-        double xOffset = 0.0;
+        double xOffset = PORT_SIZE*2;
         for (int i = 0; i < numCols; i++) {
-            double yOffset = 0.0;
+            double yOffset = PORT_STRIDE + canvas.getStringDrawHeight(name);
             
             for (DrawModule mod : drawCols[i]) {
                 mod.location.setLocation(xOffset, yOffset);
-                yOffset += mod.size.y + 2*PORT_SIZE;
+                yOffset += mod.size.y + PORT_SIZE*2;
             }
             
             xOffset += drawCols[i].stream().mapToDouble((mod) -> mod.size.x).max().orElse(0) + 4.0*PORT_SIZE;

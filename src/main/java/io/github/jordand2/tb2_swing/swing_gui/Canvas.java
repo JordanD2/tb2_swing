@@ -46,6 +46,7 @@ public class Canvas extends JPanel{
     final static int MOUSE_NAV_BUTTON    = MouseEvent.BUTTON2;
     final static int MOUSE_OPTION_BUTTON = MouseEvent.BUTTON3;
     
+    final static float DEFAULT_FONT_SIZE = 24.0f;
     final static double DEFAULT_SCALE_FACTOR = 1.0;
     final static double SCALE_STEP = 1.2;
     final static double MAX_SCALE_FACTOR = 20.0;
@@ -328,12 +329,38 @@ public class Canvas extends JPanel{
         repaint();
     }
     
+    /**
+     * @param s The display string
+     * @return The number of horizontal screen pixels required to display the given string
+     */
     public int getStringDrawWidth(String s) {
-        return getGraphics().getFontMetrics(getFont().deriveFont(12.0f * (float)scaleFactor)).stringWidth(s);
+        return getStringDrawWidth(s, (float)this.scaleFactor);
     }
     
+    /**
+     * @param s The display string
+     * @param scaleFactor The font scaling as a percentage. 1.00 corresponds to default 12pt font.
+     * @return The number of horizontal screen pixels required to display the given string
+     */
+    public int getStringDrawWidth(String s, float scaleFactor) {
+        return getGraphics().getFontMetrics(getFont().deriveFont(DEFAULT_FONT_SIZE * scaleFactor)).stringWidth(s);
+    }
+    
+    /**
+     * @param s The display string
+     * @return The number of vertical screen pixels required to display the given string
+     */
     public int getStringDrawHeight(String s) {
-        return getGraphics().getFontMetrics(getFont().deriveFont(12.0f * (float)scaleFactor)).getHeight();
+        return getStringDrawHeight(s, (float)this.scaleFactor);
+    }
+    
+    /**
+     * @param s The display string
+     * @param scaleFactor The font scaling as a percentage. 1.00 corresponds to default 12pt font.
+     * @return The number of vertical screen pixels required to display the given string
+     */
+    public int getStringDrawHeight(String s, float scaleFactor) {
+        return getGraphics().getFontMetrics(getFont().deriveFont(DEFAULT_FONT_SIZE * scaleFactor)).getHeight();
     }
     
     public void handleMouseWheelEvent(MouseWheelEvent evt){
@@ -529,7 +556,7 @@ public class Canvas extends JPanel{
         
         Font ogFont = g.getFont();
         
-        g.setFont(ogFont.deriveFont(12.0f * (float)scaleFactor));
+        g.setFont(ogFont.deriveFont(DEFAULT_FONT_SIZE * (float)scaleFactor));
         
         // Draw each module
         for (DrawModule module : modules) {

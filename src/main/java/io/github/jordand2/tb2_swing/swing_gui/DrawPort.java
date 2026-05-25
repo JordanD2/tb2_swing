@@ -54,8 +54,19 @@ public class DrawPort implements Cloneable {
         return this;
     }
     
+    /**
+     * @return The number of horizontal pixels required for this Port's label
+     */
     public int getLabelWidth() {
         return canvas.getStringDrawWidth(name);
+    }
+    
+    /**
+     * @param scaleFactor The font scaling as a percentage. 1.00 corresponds to default 12pt font.
+     * @return The number of horizontal pixels required for this Port's label
+     */
+    public int getLabelWidth(float scaleFactor) {
+        return canvas.getStringDrawWidth(name, scaleFactor);
     }
     
     public double getXPos() {
