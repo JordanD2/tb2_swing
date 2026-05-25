@@ -152,8 +152,7 @@ public class NewPortDialog extends javax.swing.JDialog {
             } else {
                 // Changed dataType or direction -> delete and recreate the port
                 moduleTarget.deletePort(portTarget);
-                moduleTarget.addPort(portNameField.getText(), dataTypeField.getText(), selectedType);
-                moduleTarget.reindexPorts(false);
+                moduleTarget.addPort(portNameField.getText(), dataTypeField.getText(), selectedType, portTarget.idx);
             }
         } else {
             if (portRadButton.isSelected()) {

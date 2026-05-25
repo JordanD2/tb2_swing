@@ -111,6 +111,14 @@ public class DrawModule implements Cloneable {
         this.connections.addAll(module.connections.stream().map((conn) -> new DrawConnection(canvas, this, getPort(conn.srcPath), getPort(conn.dstPath)   )).toList());
     }
     
+    /**
+     * Reassign the index field for each port in this module. The index field is used to determine
+     * the vertical offset of each port when drawn on the Canvas.
+     * 
+     * The caller may want to call repaint(), so that the updated port positions will be displayed
+     * 
+     * @param includeSubmodules Iff true, then this will also recursively reindex all submodules too
+     */
     public void reindexPorts(boolean includeSubmodules) {
         for (int i = 0; i < inputPorts.size(); i++) {
             inputPorts.get(i).setIdx(i);
@@ -182,16 +190,45 @@ public class DrawModule implements Cloneable {
         }
     }
     
+    /**
+     * Adds a new Port to this module
+     * 
+     * @param name The name of the new Port
+     * @param dataType The type of data this Port handles
+     * @param type INPUT_PORT or OUTPUT_PORT
+     */
     public void addPort(String name, String dataType, int type) {
         if (type == DrawPort.INPUT_PORT) {
-            inputPorts.add(new DrawPort(canvas, this, type, name, dataType));
-            inputPorts.getLast().idx = inputPorts.size()-1;
+            addPort(name, dataType, type, inputPorts.size());
         } else {
-            outputPorts.add(new DrawPort(canvas, this, type, name, dataType));
-            outputPorts.getLast().idx = outputPorts.size()-1;
+            addPort(name, dataType, type, outputPorts.size());
         }
     }
     
+    /**
+     * Adds a new Port to this module
+     * 
+     * @param name The name of the new Port
+     * @param dataType The type of data this Port handles
+     * @param type INPUT_PORT or OUTPUT_PORT
+     * @param portIndex Specify the port index to be assigned to this port
+     */
+    public void addPort(String name, String dataType, int type, int portIndex) {
+        if (type == DrawPort.INPUT_PORT) {
+            inputPorts.add(new DrawPort(canvas, this, type, name, dataType));
+            inputPorts.getLast().idx = portIndex;
+        } else {
+            outputPorts.add(new DrawPort(canvas, this, type, name, dataType));
+            outputPorts.getLast().idx = portIndex;
+        }
+    }
+    
+    /**
+     * Removes a port from this module, along with any connections associated
+     * with that port.
+     * 
+     * @param port The port to be removed
+     */
     public void deletePort(DrawPort port) {
         inputPorts.remove(port);
         outputPorts.remove(port);

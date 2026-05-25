@@ -14,6 +14,7 @@
 
 package io.github.jordand2.tb2_swing.swing_gui;
 
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 
@@ -36,6 +37,74 @@ public class PortPopup extends JPopupMenu {
             popup.usePortInfo(canvas.selectedPort);
             popup.setVisible(true);
         });
+        
+        this.addSeparator();
+        
+        this.add("Move to Top").addActionListener((e) -> {
+            final DrawPort target = canvas.selectedPort;
+            final DrawModule parent = canvas.selectedPort.parent;
+            ArrayList<DrawPort> ports;
+            if (target.type == DrawPort.INPUT_PORT) {
+                ports = parent.inputPorts;
+            } else {
+                ports = parent.outputPorts;
+            }
+            ports.remove(target);
+            ports.addFirst(target);
+            parent.reindexPorts(false);
+            canvas.repaint();
+        });
+        
+        this.add("Move Up").addActionListener((e) -> {
+            final DrawPort target = canvas.selectedPort;
+            final DrawModule parent = canvas.selectedPort.parent;
+            ArrayList<DrawPort> ports;
+            if (target.type == DrawPort.INPUT_PORT) {
+                ports = parent.inputPorts;
+            } else {
+                ports = parent.outputPorts;
+            }
+            final int idx = ports.indexOf(target);
+            if ((ports.size() > 1) && (idx > 0)) {
+                ports.add(idx-1, ports.remove(idx));
+                parent.reindexPorts(false);
+                canvas.repaint();
+            }
+        });
+        
+        this.add("Move Down").addActionListener((e) -> {
+            final DrawPort target = canvas.selectedPort;
+            final DrawModule parent = canvas.selectedPort.parent;
+            ArrayList<DrawPort> ports;
+            if (target.type == DrawPort.INPUT_PORT) {
+                ports = parent.inputPorts;
+            } else {
+                ports = parent.outputPorts;
+            }
+            final int idx = ports.indexOf(target);
+            if ((ports.size() > 1) && (idx < ports.size()-1)) {
+                ports.add(idx+1, ports.remove(idx));
+                parent.reindexPorts(false);
+                canvas.repaint();
+            }
+        });
+        
+        this.add("Move to Bottom").addActionListener((e) -> {
+            final DrawPort target = canvas.selectedPort;
+            final DrawModule parent = canvas.selectedPort.parent;
+            ArrayList<DrawPort> ports;
+            if (target.type == DrawPort.INPUT_PORT) {
+                ports = parent.inputPorts;
+            } else {
+                ports = parent.outputPorts;
+            }
+            ports.remove(target);
+            ports.addLast(target);
+            parent.reindexPorts(false);
+            canvas.repaint();
+        });
+        
+        this.addSeparator();
         
         this.add("Delete").addActionListener((e) -> {
             canvas.selectedPort.parent.deletePort(canvas.selectedPort);
