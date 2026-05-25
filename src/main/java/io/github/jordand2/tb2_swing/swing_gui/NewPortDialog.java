@@ -59,7 +59,6 @@ public class NewPortDialog extends javax.swing.JDialog {
         portNameLabel.setText("Port Name :");
 
         portNameField.setText("analysis_export");
-        portNameField.addActionListener(this::portNameFieldActionPerformed);
 
         okButton.setText("OK");
         okButton.addActionListener(this::okButtonActionPerformed);
@@ -152,7 +151,13 @@ public class NewPortDialog extends javax.swing.JDialog {
             } else {
                 // Changed dataType or direction -> delete and recreate the port
                 moduleTarget.deletePort(portTarget);
-                moduleTarget.addPort(portNameField.getText(), dataTypeField.getText(), selectedType, portTarget.idx);
+                if (portTarget.type == selectedType) {
+                    // Same direction -> preserve idx
+                    moduleTarget.addPort(portNameField.getText(), dataTypeField.getText(), selectedType, portTarget.idx);
+                } else {
+                    // Changed direction -> reindex
+                    moduleTarget.addPort(portNameField.getText(), dataTypeField.getText(), selectedType);
+                }
             }
         } else {
             if (portRadButton.isSelected()) {
@@ -168,10 +173,6 @@ public class NewPortDialog extends javax.swing.JDialog {
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
-
-    private void portNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portNameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_portNameFieldActionPerformed
     
     public void usePortInfo(DrawPort port) {
         portNameField.setText(port.name);
