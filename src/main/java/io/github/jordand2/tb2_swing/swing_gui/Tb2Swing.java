@@ -19,15 +19,20 @@ import io.github.jordand2.tb2_swing.yamlio.YamlReader;
 import io.github.jordand2.tb2_swing.yamlio.YamlWriter;
 import io.github.jordand2.tb2_swing.jte_render.ModuleRenderer;
 import java.awt.Desktop;
+import java.awt.Graphics2D;
 import java.awt.desktop.QuitStrategy;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -62,6 +67,28 @@ public class Tb2Swing extends javax.swing.JFrame {
         renderBtn = new javax.swing.JButton();
         exitBtn = new javax.swing.JButton();
         canvas = new Canvas();
+        appMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        openItem = new javax.swing.JMenuItem();
+        fileSeparator1 = new javax.swing.JPopupMenu.Separator();
+        saveItem = new javax.swing.JMenuItem();
+        fileSeparator2 = new javax.swing.JPopupMenu.Separator();
+        exportImageItem = new javax.swing.JMenuItem();
+        fileSeparator3 = new javax.swing.JPopupMenu.Separator();
+        printItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        undoItem = new javax.swing.JMenuItem();
+        redoItem = new javax.swing.JMenuItem();
+        editSeparator1 = new javax.swing.JPopupMenu.Separator();
+        cutItem = new javax.swing.JMenuItem();
+        copyItem = new javax.swing.JMenuItem();
+        duplicateItem = new javax.swing.JMenuItem();
+        pasteItem = new javax.swing.JMenuItem();
+        deleteItem = new javax.swing.JMenuItem();
+        runMenu = new javax.swing.JMenu();
+        validateItem = new javax.swing.JMenuItem();
+        runSeparator1 = new javax.swing.JPopupMenu.Separator();
+        renderItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("TB2");
@@ -136,8 +163,89 @@ public class Tb2Swing extends javax.swing.JFrame {
         );
         canvasLayout.setVerticalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 561, Short.MAX_VALUE)
+            .addGap(0, 537, Short.MAX_VALUE)
         );
+
+        fileMenu.setText("File");
+
+        openItem.setAccelerator(KeyStroke.getKeyStroke('O', Canvas.EDIT_MODIFIER_MASK)
+        );
+        openItem.setText("Open");
+        openItem.setToolTipText("");
+        openItem.addActionListener(this::openItemActionPerformed);
+        fileMenu.add(openItem);
+        fileMenu.add(fileSeparator1);
+
+        saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Canvas.EDIT_MODIFIER_MASK));
+        saveItem.setText("Save");
+        saveItem.addActionListener(this::saveItemActionPerformed);
+        fileMenu.add(saveItem);
+        fileMenu.add(fileSeparator2);
+
+        exportImageItem.setAccelerator(KeyStroke.getKeyStroke('P', Canvas.EDIT_MODIFIER_MASK | InputEvent.SHIFT_MASK));
+        exportImageItem.setText("Export image");
+        exportImageItem.addActionListener(this::exportImageItemActionPerformed);
+        fileMenu.add(exportImageItem);
+        fileMenu.add(fileSeparator3);
+
+        printItem.setAccelerator(KeyStroke.getKeyStroke('P', Canvas.EDIT_MODIFIER_MASK));
+        printItem.setText("Print");
+        printItem.setEnabled(false);
+        fileMenu.add(printItem);
+
+        appMenuBar.add(fileMenu);
+
+        editMenu.setText("Edit");
+
+        undoItem.setAccelerator(KeyStroke.getKeyStroke('Z', Canvas.EDIT_MODIFIER_MASK));
+        undoItem.setText("Undo");
+        undoItem.setEnabled(false);
+        editMenu.add(undoItem);
+
+        redoItem.setAccelerator(KeyStroke.getKeyStroke('Y', Canvas.EDIT_MODIFIER_MASK));
+        redoItem.setText("Redo");
+        redoItem.setEnabled(false);
+        editMenu.add(redoItem);
+        editMenu.add(editSeparator1);
+
+        cutItem.setAccelerator(KeyStroke.getKeyStroke('X', Canvas.EDIT_MODIFIER_MASK));
+        cutItem.setText("Cut");
+        editMenu.add(cutItem);
+
+        copyItem.setAccelerator(KeyStroke.getKeyStroke('C', Canvas.EDIT_MODIFIER_MASK));
+        copyItem.setText("Copy");
+        editMenu.add(copyItem);
+
+        duplicateItem.setAccelerator(KeyStroke.getKeyStroke('D', Canvas.EDIT_MODIFIER_MASK));
+        duplicateItem.setText("Duplicate");
+        editMenu.add(duplicateItem);
+
+        pasteItem.setAccelerator(KeyStroke.getKeyStroke('V', Canvas.EDIT_MODIFIER_MASK));
+        pasteItem.setText("Paste");
+        editMenu.add(pasteItem);
+
+        deleteItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        deleteItem.setText("Delete");
+        editMenu.add(deleteItem);
+
+        appMenuBar.add(editMenu);
+
+        runMenu.setText("Run");
+
+        validateItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        validateItem.setText("Validate");
+        validateItem.addActionListener(this::validateItemActionPerformed);
+        runMenu.add(validateItem);
+        runMenu.add(runSeparator1);
+
+        renderItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, 0));
+        renderItem.setText("Render");
+        renderItem.addActionListener(this::renderItemActionPerformed);
+        runMenu.add(renderItem);
+
+        appMenuBar.add(runMenu);
+
+        setJMenuBar(appMenuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -302,29 +410,96 @@ public class Tb2Swing extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_formWindowClosing
+
+    private void openItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openItemActionPerformed
+        loadBtnActionPerformed(evt);
+    }//GEN-LAST:event_openItemActionPerformed
+
+    private void saveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveItemActionPerformed
+        saveBtnActionPerformed(evt);
+    }//GEN-LAST:event_saveItemActionPerformed
+
+    private void validateItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validateItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            if (c.modules.stream().allMatch((t) -> t.validate())) {
+                logger.log(Level.INFO, "Validation Passed!");
+            } else {
+                logger.log(Level.INFO, "Validation Failed!");
+            }
+        }
+    }//GEN-LAST:event_validateItemActionPerformed
+
+    private void renderItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renderItemActionPerformed
+        renderBtnActionPerformed(evt);
+    }//GEN-LAST:event_renderItemActionPerformed
+
+    private void exportImageItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportImageItemActionPerformed
+        JFileChooser jfc = new JFileChooser();
+        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                // TODO : draw all components wrapped by some fixed margin. Image should be the same regardless of zoom distance or window location
+                BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = image.createGraphics();
+                canvas.printAll(g2d);
+                g2d.dispose();
+                ImageIO.write(image, "png", jfc.getSelectedFile());
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, String.format("Failed to save %s", jfc.getSelectedFile().getPath()));
+            }
+        }
+    }//GEN-LAST:event_exportImageItemActionPerformed
     
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        // TODO: Does this make non-Mac environments act weird
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+        Desktop.getDesktop().setPreferencesHandler((e) -> {
+            // TODO: Add preferences window. Migrate constants from Canvas to the preferences system
+            logger.log(Level.INFO, "Requested preferences");
+        });
+        
         Tb2Swing app = new Tb2Swing();
         
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_QUIT_STRATEGY)) {
             Desktop.getDesktop().setQuitStrategy(QuitStrategy.CLOSE_ALL_WINDOWS);
         }
         
-        
         java.awt.EventQueue.invokeLater(() -> app.setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBtn;
+    private javax.swing.JMenuBar appMenuBar;
     private javax.swing.JPanel canvas;
+    private javax.swing.JMenuItem copyItem;
+    private javax.swing.JMenuItem cutItem;
+    private javax.swing.JMenuItem deleteItem;
+    private javax.swing.JMenuItem duplicateItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JPopupMenu.Separator editSeparator1;
     private javax.swing.JButton exitBtn;
+    private javax.swing.JMenuItem exportImageItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JPopupMenu.Separator fileSeparator1;
+    private javax.swing.JPopupMenu.Separator fileSeparator2;
+    private javax.swing.JPopupMenu.Separator fileSeparator3;
     private javax.swing.JButton loadBtn;
     private javax.swing.JButton newBtn;
+    private javax.swing.JMenuItem openItem;
+    private javax.swing.JMenuItem pasteItem;
+    private javax.swing.JMenuItem printItem;
+    private javax.swing.JMenuItem redoItem;
     private javax.swing.JButton renderBtn;
+    private javax.swing.JMenuItem renderItem;
+    private javax.swing.JMenu runMenu;
+    private javax.swing.JSeparator runSeparator1;
     private javax.swing.JButton saveBtn;
+    private javax.swing.JMenuItem saveItem;
     private javax.swing.JPanel toolBar;
+    private javax.swing.JMenuItem undoItem;
+    private javax.swing.JMenuItem validateItem;
     // End of variables declaration//GEN-END:variables
 }

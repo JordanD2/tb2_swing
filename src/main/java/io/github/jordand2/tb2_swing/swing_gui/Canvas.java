@@ -31,7 +31,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import io.github.jordand2.tb2_swing.core.Module;
-import java.awt.event.InputEvent;
+import java.awt.Toolkit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +56,7 @@ public class Canvas extends JPanel{
     final static int NAV_STEP = 8;
     final static int NAV_UPDATE_PERIOD_MS = 16;  // 16ms -> 60fps (Now we're gaming!)
     
-    final static int EDIT_MODIFIER_MASK = InputEvent.META_DOWN_MASK;
+    final static int EDIT_MODIFIER_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Tb2Swing.class.getName());
     
