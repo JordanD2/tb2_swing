@@ -265,6 +265,7 @@ public class Tb2Swing extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    File lastImageDir;
     File lastModuleDir = Path.of("modules").toFile();
     
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
@@ -434,18 +435,24 @@ public class Tb2Swing extends javax.swing.JFrame {
     }//GEN-LAST:event_renderItemActionPerformed
 
     private void exportImageItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportImageItemActionPerformed
-        JFileChooser jfc = new JFileChooser();
+        JFileChooser jfc = new JFileChooser(lastImageDir);
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File selected = jfc.getSelectedFile();
+            String path = selected.getPath();
+            if (!path.endsWith(".png")) {
+                selected = new File(path + ".png");
+            }
+            BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = image.createGraphics();
+            canvas.printAll(g2d);
+            g2d.dispose();
             try {
                 // TODO : draw all components wrapped by some fixed margin. Image should be the same regardless of zoom distance or window location
-                BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
-                Graphics2D g2d = image.createGraphics();
-                canvas.printAll(g2d);
-                g2d.dispose();
-                ImageIO.write(image, "png", jfc.getSelectedFile());
+                ImageIO.write(image, "png", selected);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, String.format("Failed to save %s", jfc.getSelectedFile().getPath()));
+                logger.log(Level.SEVERE, String.format("Failed to save %s", selected.getPath()));
             }
+            lastImageDir = selected.getParentFile();
         }
     }//GEN-LAST:event_exportImageItemActionPerformed
     
