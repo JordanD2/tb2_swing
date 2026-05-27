@@ -85,6 +85,11 @@ public class Tb2Swing extends javax.swing.JFrame {
         duplicateItem = new javax.swing.JMenuItem();
         pasteItem = new javax.swing.JMenuItem();
         deleteItem = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        zoomInItem = new javax.swing.JMenuItem();
+        zoomOutItem = new javax.swing.JMenuItem();
+        zoomFitItem = new javax.swing.JMenuItem();
+        resetViewportItem = new javax.swing.JMenuItem();
         runMenu = new javax.swing.JMenu();
         validateItem = new javax.swing.JMenuItem();
         runSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -229,6 +234,30 @@ public class Tb2Swing extends javax.swing.JFrame {
         editMenu.add(deleteItem);
 
         appMenuBar.add(editMenu);
+
+        jMenu1.setText("View");
+
+        zoomInItem.setAccelerator(KeyStroke.getKeyStroke('=', Canvas.EDIT_MODIFIER_MASK));
+        zoomInItem.setText("Zoom In");
+        zoomInItem.addActionListener(this::zoomInItemActionPerformed);
+        jMenu1.add(zoomInItem);
+
+        zoomOutItem.setAccelerator(KeyStroke.getKeyStroke('-', Canvas.EDIT_MODIFIER_MASK));
+        zoomOutItem.setText("Zoom Out");
+        zoomOutItem.addActionListener(this::zoomOutItemActionPerformed);
+        jMenu1.add(zoomOutItem);
+
+        zoomFitItem.setAccelerator(KeyStroke.getKeyStroke('0', Canvas.EDIT_MODIFIER_MASK));
+        zoomFitItem.setText("Zoom Fit");
+        zoomFitItem.setEnabled(false);
+        zoomFitItem.addActionListener(this::zoomFitItemActionPerformed);
+        jMenu1.add(zoomFitItem);
+
+        resetViewportItem.setText("Reset Viewport");
+        resetViewportItem.addActionListener(this::resetViewportItemActionPerformed);
+        jMenu1.add(resetViewportItem);
+
+        appMenuBar.add(jMenu1);
 
         runMenu.setText("Run");
 
@@ -455,6 +484,31 @@ public class Tb2Swing extends javax.swing.JFrame {
             lastImageDir = selected.getParentFile();
         }
     }//GEN-LAST:event_exportImageItemActionPerformed
+
+    private void zoomInItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            c.handleZoom(-Canvas.KEYBOARD_ZOOM_STEP, c.getWidth()/2, c.getHeight()/2);
+            c.repaint();
+        }
+    }//GEN-LAST:event_zoomInItemActionPerformed
+
+    private void zoomOutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            c.handleZoom(Canvas.KEYBOARD_ZOOM_STEP, c.getWidth()/2, c.getHeight()/2);
+            c.repaint();
+        }
+    }//GEN-LAST:event_zoomOutItemActionPerformed
+
+    private void zoomFitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomFitItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_zoomFitItemActionPerformed
+
+    private void resetViewportItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetViewportItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            c.resetViewport();
+            c.repaint();
+        }
+    }//GEN-LAST:event_resetViewportItemActionPerformed
     
     /**
      * @param args the command line arguments
@@ -493,6 +547,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator fileSeparator1;
     private javax.swing.JPopupMenu.Separator fileSeparator2;
     private javax.swing.JPopupMenu.Separator fileSeparator3;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JButton loadBtn;
     private javax.swing.JButton newBtn;
     private javax.swing.JMenuItem openItem;
@@ -501,12 +556,16 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JButton renderBtn;
     private javax.swing.JMenuItem renderItem;
+    private javax.swing.JMenuItem resetViewportItem;
     private javax.swing.JMenu runMenu;
-    private javax.swing.JSeparator runSeparator1;
+    private javax.swing.JPopupMenu.Separator runSeparator1;
     private javax.swing.JButton saveBtn;
     private javax.swing.JMenuItem saveItem;
     private javax.swing.JPanel toolBar;
     private javax.swing.JMenuItem undoItem;
     private javax.swing.JMenuItem validateItem;
+    private javax.swing.JMenuItem zoomFitItem;
+    private javax.swing.JMenuItem zoomInItem;
+    private javax.swing.JMenuItem zoomOutItem;
     // End of variables declaration//GEN-END:variables
 }
