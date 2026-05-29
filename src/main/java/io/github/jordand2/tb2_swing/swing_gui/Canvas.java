@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import io.github.jordand2.tb2_swing.core.Module;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -170,6 +172,17 @@ public class Canvas extends JPanel{
                 repaint();
             }
         });
+        
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "escape");
+        am.put("escape", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selected = null;
+                selectedPort = null;
+                repaint();
+            }
+        });
+        
         
         im.put(KeyStroke.getKeyStroke("DELETE"), "delete");
         am.put("delete", new AbstractAction() {
