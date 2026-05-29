@@ -69,9 +69,11 @@ public class Tb2Swing extends javax.swing.JFrame {
         canvas = new Canvas();
         appMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        newItem = new javax.swing.JMenuItem();
         openItem = new javax.swing.JMenuItem();
         fileSeparator1 = new javax.swing.JPopupMenu.Separator();
         saveItem = new javax.swing.JMenuItem();
+        saveAsItem = new javax.swing.JMenuItem();
         fileSeparator2 = new javax.swing.JPopupMenu.Separator();
         exportImageItem = new javax.swing.JMenuItem();
         fileSeparator3 = new javax.swing.JPopupMenu.Separator();
@@ -173,6 +175,12 @@ public class Tb2Swing extends javax.swing.JFrame {
 
         fileMenu.setText("File");
 
+        newItem.setAccelerator(KeyStroke.getKeyStroke('N', Canvas.EDIT_MODIFIER_MASK)
+        );
+        newItem.setText("New");
+        newItem.setEnabled(false);
+        fileMenu.add(newItem);
+
         openItem.setAccelerator(KeyStroke.getKeyStroke('O', Canvas.EDIT_MODIFIER_MASK)
         );
         openItem.setText("Open");
@@ -183,8 +191,14 @@ public class Tb2Swing extends javax.swing.JFrame {
 
         saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Canvas.EDIT_MODIFIER_MASK));
         saveItem.setText("Save");
+        saveItem.setEnabled(false);
         saveItem.addActionListener(this::saveItemActionPerformed);
         fileMenu.add(saveItem);
+
+        saveAsItem.setAccelerator(KeyStroke.getKeyStroke('S', Canvas.EDIT_MODIFIER_MASK | InputEvent.SHIFT_MASK));
+        saveAsItem.setText("Save As...");
+        saveAsItem.addActionListener(this::saveAsItemActionPerformed);
+        fileMenu.add(saveAsItem);
         fileMenu.add(fileSeparator2);
 
         exportImageItem.setAccelerator(KeyStroke.getKeyStroke('P', Canvas.EDIT_MODIFIER_MASK | InputEvent.SHIFT_MASK));
@@ -509,6 +523,10 @@ public class Tb2Swing extends javax.swing.JFrame {
             c.repaint();
         }
     }//GEN-LAST:event_resetViewportItemActionPerformed
+
+    private void saveAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsItemActionPerformed
+        saveBtnActionPerformed(evt);
+    }//GEN-LAST:event_saveAsItemActionPerformed
     
     /**
      * @param args the command line arguments
@@ -550,6 +568,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JButton loadBtn;
     private javax.swing.JButton newBtn;
+    private javax.swing.JMenuItem newItem;
     private javax.swing.JMenuItem openItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.JMenuItem printItem;
@@ -559,6 +578,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JMenuItem resetViewportItem;
     private javax.swing.JMenu runMenu;
     private javax.swing.JPopupMenu.Separator runSeparator1;
+    private javax.swing.JMenuItem saveAsItem;
     private javax.swing.JButton saveBtn;
     private javax.swing.JMenuItem saveItem;
     private javax.swing.JPanel toolBar;
