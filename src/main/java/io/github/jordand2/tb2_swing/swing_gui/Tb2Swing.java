@@ -18,7 +18,10 @@ import io.github.jordand2.tb2_swing.core.Module;
 import io.github.jordand2.tb2_swing.yamlio.YamlReader;
 import io.github.jordand2.tb2_swing.yamlio.YamlWriter;
 import io.github.jordand2.tb2_swing.jte_render.ModuleRenderer;
+import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.desktop.QuitStrategy;
 import java.awt.event.ActionEvent;
@@ -31,6 +34,7 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -96,6 +100,8 @@ public class Tb2Swing extends javax.swing.JFrame {
         validateItem = new javax.swing.JMenuItem();
         runSeparator1 = new javax.swing.JPopupMenu.Separator();
         renderItem = new javax.swing.JMenuItem();
+        windowMenu = new javax.swing.JMenu();
+        previewTypeItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("TB2");
@@ -287,6 +293,14 @@ public class Tb2Swing extends javax.swing.JFrame {
         runMenu.add(renderItem);
 
         appMenuBar.add(runMenu);
+
+        windowMenu.setText("Window");
+
+        previewTypeItem.setText("Preview Type");
+        previewTypeItem.addActionListener(this::previewTypeItemActionPerformed);
+        windowMenu.add(previewTypeItem);
+
+        appMenuBar.add(windowMenu);
 
         setJMenuBar(appMenuBar);
 
@@ -527,6 +541,37 @@ public class Tb2Swing extends javax.swing.JFrame {
     private void saveAsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsItemActionPerformed
         saveBtnActionPerformed(evt);
     }//GEN-LAST:event_saveAsItemActionPerformed
+
+    private void previewTypeItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previewTypeItemActionPerformed
+        JFileChooser jfc = new JFileChooser(lastModuleDir);
+        jfc.setFileFilter(new FileNameExtensionFilter("Yaml files", "yaml"));
+        if (jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File f = jfc.getSelectedFile();
+            lastModuleDir = jfc.getCurrentDirectory();
+
+            YamlReader reader = new YamlReader();
+            Module module = reader.readModule(f);
+            if (module != null) {
+                JFrame typeEditorFrame = new JFrame();
+                
+                TypeEditorPanel typeEditor = new TypeEditorPanel();
+                typeEditor.setBackground(Color.WHITE);
+                typeEditor.setPreferredSize(new Dimension(500, 500));
+                
+                typeEditorFrame.add(typeEditor);
+                typeEditorFrame.setPreferredSize(new Dimension(500, 500));
+                
+                typeEditorFrame.pack();
+                typeEditor.loadModule(module);
+                
+                EventQueue.invokeLater(() -> {
+                    typeEditorFrame.setVisible(true);
+                });
+            }
+        }
+        
+        
+    }//GEN-LAST:event_previewTypeItemActionPerformed
     
     /**
      * @param args the command line arguments
@@ -571,6 +616,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JMenuItem newItem;
     private javax.swing.JMenuItem openItem;
     private javax.swing.JMenuItem pasteItem;
+    private javax.swing.JMenuItem previewTypeItem;
     private javax.swing.JMenuItem printItem;
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JButton renderBtn;
@@ -584,6 +630,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private javax.swing.JPanel toolBar;
     private javax.swing.JMenuItem undoItem;
     private javax.swing.JMenuItem validateItem;
+    private javax.swing.JMenu windowMenu;
     private javax.swing.JMenuItem zoomFitItem;
     private javax.swing.JMenuItem zoomInItem;
     private javax.swing.JMenuItem zoomOutItem;

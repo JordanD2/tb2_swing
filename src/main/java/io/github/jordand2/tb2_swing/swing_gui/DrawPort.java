@@ -31,7 +31,7 @@ public class DrawPort implements Cloneable {
     final static int INPUT_PORT = 0;
     final static int OUTPUT_PORT = 1;
     
-    public Canvas canvas;
+    public ViewportPanel canvas;
     public DrawModule parent;
 
     public int type;
@@ -41,7 +41,7 @@ public class DrawPort implements Cloneable {
     
     int idx;
     
-    public DrawPort (Canvas canvas, DrawModule parent, int type, String name, String dataType) {
+    public DrawPort (ViewportPanel canvas, DrawModule parent, int type, String name, String dataType) {
         this.canvas = canvas;
         this.parent = parent;
         this.name = name;

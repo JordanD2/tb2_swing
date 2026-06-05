@@ -22,14 +22,12 @@ import io.github.jordand2.tb2_swing.core.Connection;
  */
 public class DrawConnection {
     
-    Canvas canvas;
     DrawModule parent;
     
     DrawPort sourcePort;
     DrawPort destPort;
 
-    public DrawConnection(Canvas canvas, DrawModule parent, DrawPort sourcePort, DrawPort destPort) {
-        this.canvas = canvas;
+    public DrawConnection(DrawModule parent, DrawPort sourcePort, DrawPort destPort) {
         this.parent = parent;
         this.sourcePort = sourcePort;
         this.destPort = destPort;

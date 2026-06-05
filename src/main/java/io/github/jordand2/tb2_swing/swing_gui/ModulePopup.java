@@ -70,7 +70,7 @@ public class ModulePopup extends JPopupMenu{
             agt.addPort("mon_port", "uvm_object", DrawPort.OUTPUT_PORT);
             DrawModule mon = new DrawModule(canvas, "mon", "uvm_monitor", new RealPoint(0,0));
             mon.addPort("mon_port", "uvm_object", DrawPort.OUTPUT_PORT);
-            agt.connections.add(new DrawConnection(canvas, agt, mon.outputPorts.get(0), agt.outputPorts.get(0)));
+            agt.connections.add(new DrawConnection(agt, mon.outputPorts.get(0), agt.outputPorts.get(0)));
             agt.hideInternals = true;
             
             agt.addSubmodule(mon);

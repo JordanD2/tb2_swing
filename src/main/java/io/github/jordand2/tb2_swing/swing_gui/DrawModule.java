@@ -52,7 +52,7 @@ public class DrawModule implements Cloneable {
     String template = "uvm_component.jte";
     
     DrawModule parent = null;
-    Canvas canvas = null;
+    ViewportPanel canvas = null;
     
     RealPoint location;
     RealPoint size;
@@ -70,12 +70,12 @@ public class DrawModule implements Cloneable {
     final ArrayList<ConfigField> configFields = new ArrayList<>();
     final ArrayList<ConfigAssign> configAssigns = new ArrayList<>();
     
-    public DrawModule(Canvas canvas, String name) {
+    public DrawModule(ViewportPanel canvas, String name) {
         this.canvas = canvas;
         this.name = name;
     }
     
-    public DrawModule(Canvas canvas, String name, RealPoint location, RealPoint size) {
+    public DrawModule(ViewportPanel canvas, String name, RealPoint location, RealPoint size) {
         this(canvas, name);
         this.location = location;
         this.size = size;
@@ -83,16 +83,16 @@ public class DrawModule implements Cloneable {
     }
     
         
-    public DrawModule(Canvas canvas, String name, String type, RealPoint location) {
+    public DrawModule(ViewportPanel canvas, String name, String type, RealPoint location) {
         this(canvas, name, location);
         this.type = type;
     }
     
-    public DrawModule(Canvas canvas, String name, RealPoint location) {
+    public DrawModule(ViewportPanel canvas, String name, RealPoint location) {
         this(canvas, name, location, new RealPoint(0, 0));
     }
     
-    public DrawModule(Canvas canvas, DrawModule parent, Module module) {
+    public DrawModule(ViewportPanel canvas, DrawModule parent, Module module) {
         this.name = module.getName();
         if (this.name == null || this.name.isEmpty()) {
             this.name = module.getType();
@@ -108,7 +108,7 @@ public class DrawModule implements Cloneable {
         this.inputPorts .addAll(module.inputPorts .stream().map((port) -> new DrawPort      (canvas, this, DrawPort.INPUT_PORT , port.name, port.getType())).toList());
         this.outputPorts.addAll(module.outputPorts.stream().map((port) -> new DrawPort      (canvas, this, DrawPort.OUTPUT_PORT, port.name, port.getType())).toList());
         this.submodules .addAll(module.submodules .stream().map((sub ) -> new DrawModule    (canvas, this, sub                                            )).toList());
-        this.connections.addAll(module.connections.stream().map((conn) -> new DrawConnection(canvas, this, getPort(conn.srcPath), getPort(conn.dstPath)   )).toList());
+        this.connections.addAll(module.connections.stream().map((conn) -> new DrawConnection(this, getPort(conn.srcPath), getPort(conn.dstPath)   )).toList());
     }
     
     /**
@@ -683,7 +683,7 @@ public class DrawModule implements Cloneable {
         }
         
         for (DrawConnection conn : connections) {
-            clone.connections.add(new DrawConnection(canvas, clone, connPortMap.get(conn.sourcePort), connPortMap.get(conn.destPort)));
+            clone.connections.add(new DrawConnection(clone, connPortMap.get(conn.sourcePort), connPortMap.get(conn.destPort)));
         }
         
         return clone;
