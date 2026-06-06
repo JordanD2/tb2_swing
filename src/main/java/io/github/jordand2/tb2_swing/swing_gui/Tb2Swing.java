@@ -360,7 +360,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         if (canvas instanceof Canvas) {
             Canvas c = (Canvas)canvas;
-            c.modules.add(new DrawModule(c, "module", new RealPoint(c.getWidth()/2, c.getHeight()/2).inverseScaleBy(c.scaleFactor).add(c.offset), new RealPoint(100, 100)));
+            c.addModule(new DrawModule(c, "module", new RealPoint(c.getWidth()/2, c.getHeight()/2).inverseScaleBy(c.scaleFactor).add(c.offset), new RealPoint(100, 100)));
             c.repaint();
         }
     }//GEN-LAST:event_addBtnActionPerformed
@@ -456,7 +456,7 @@ public class Tb2Swing extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         logger.log(Level.INFO, "Closing window");
         
-        if (canvas instanceof Canvas c && c.modified && !c.modules.isEmpty()) {
+        if (canvas instanceof Canvas c && c.modified) {
             if (JOptionPane.showConfirmDialog(this, "Save before exit?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 saveBtnActionPerformed(new ActionEvent(evt.getSource(), ActionEvent.ACTION_PERFORMED, "Save"));
                 
@@ -479,7 +479,7 @@ public class Tb2Swing extends javax.swing.JFrame {
 
     private void validateItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validateItemActionPerformed
         if (canvas instanceof Canvas c) {
-            if (c.modules.stream().allMatch((t) -> t.validate())) {
+            if (c.validateModules()) {
                 logger.log(Level.INFO, "Validation Passed!");
             } else {
                 logger.log(Level.INFO, "Validation Failed!");

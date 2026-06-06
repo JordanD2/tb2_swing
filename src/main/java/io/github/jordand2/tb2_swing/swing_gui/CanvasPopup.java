@@ -36,12 +36,10 @@ public class CanvasPopup extends JPopupMenu{
                     "uvm_component",
                     new RealPoint(clickLocation).inverseScaleBy(parent.scaleFactor).add(parent.offset)
             );
-            parent.modules.add(newModule);
-            parent.modified = true;
+            parent.addModule(newModule);
             newModule.resize();
             parent.repaint();
         });
-        
         
         JMenu addUvm = new JMenu("Add UVM...");
         addUvm.add("Monitor").addActionListener((e) -> {
@@ -51,8 +49,7 @@ public class CanvasPopup extends JPopupMenu{
                     new RealPoint(clickLocation).inverseScaleBy(parent.scaleFactor).add(parent.offset)
             );
             mon.addPort("seen_port", "uvm_object", DrawPort.OUTPUT_PORT);
-            parent.modules.add(mon);
-            parent.modified = true;
+            parent.addModule(mon);
             mon.resize();
             parent.repaint();
         });
@@ -63,8 +60,7 @@ public class CanvasPopup extends JPopupMenu{
                     new RealPoint(clickLocation).inverseScaleBy(parent.scaleFactor).add(parent.offset)
             );
             sbcrbr.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
-            parent.modules.add(sbcrbr);
-            parent.modified = true;
+            parent.addModule(sbcrbr);
             sbcrbr.resize();
             parent.repaint();
         });
@@ -76,8 +72,7 @@ public class CanvasPopup extends JPopupMenu{
             );
             fil.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
             fil.addPort("filtered_port", "uvm_object", DrawPort.OUTPUT_PORT);
-            parent.modules.add(fil);
-            parent.modified = true;
+            parent.addModule(fil);
             fil.resize();
             parent.repaint();
         });
@@ -89,8 +84,7 @@ public class CanvasPopup extends JPopupMenu{
             );
             fil.addPort("analysis_export", "uvm_object", DrawPort.INPUT_PORT);
             fil.addPort("output_port", "uvm_object", DrawPort.OUTPUT_PORT);
-            parent.modules.add(fil);
-            parent.modified = true;
+            parent.addModule(fil);
             fil.resize();
             parent.repaint();
         });
@@ -102,8 +96,7 @@ public class CanvasPopup extends JPopupMenu{
             );
             sb.addPort("obs_export", "uvm_object", DrawPort.INPUT_PORT);
             sb.addPort("exp_export", "uvm_object", DrawPort.INPUT_PORT);
-            parent.modules.add(sb);
-            parent.modified = true;
+            parent.addModule(sb);
             sb.resize();
             parent.repaint();
         });

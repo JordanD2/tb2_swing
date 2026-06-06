@@ -46,7 +46,6 @@ public class Canvas extends ViewportPanel {
     final static int MOUSE_NAV_BUTTON    = MouseEvent.BUTTON2;
     final static int MOUSE_OPTION_BUTTON = MouseEvent.BUTTON3;
     
-    
     final static int NAV_STEP = 8;
     final static int NAV_UPDATE_PERIOD_MS = 16;  // 16ms -> 60fps (Now we're gaming!)
     
@@ -54,7 +53,7 @@ public class Canvas extends ViewportPanel {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Canvas.class.getName());
     
-    final Deque<DrawModule> modules = new ArrayDeque<>();
+    protected final Deque<DrawModule> modules = new ArrayDeque<>();
     
     final ModulePopup modulePopup;
     final CanvasPopup canvasPopup;
@@ -168,15 +167,8 @@ public class Canvas extends ViewportPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selected != null) {
-                    if (selected.isTopModule()) {
-                        modules.remove(selected);
-                        selected = null;
-                    } else {
-                        selected.parent.deleteSubmodule(selected);
-                    }
-                    modules.remove(selected);
+                    removeModule(selected);
                     selected = null;
-                    modified = true;
                     repaint();
                 }
             }
@@ -188,14 +180,8 @@ public class Canvas extends ViewportPanel {
             public void actionPerformed(ActionEvent e) {
                 if (selected != null) {
                     pasteBin = selected;
-                    
-                    if (selected.isTopModule()) {
-                        modules.remove(selected);
-                    } else {
-                        selected.parent.deleteSubmodule(selected);
-                    }
+                    removeModule(selected);
                     selected = null;
-                    modified = true;
                     repaint();
                 }
             }
@@ -219,13 +205,9 @@ public class Canvas extends ViewportPanel {
                     try {
                         DrawModule pasted = (DrawModule) pasteBin.clone();
                         pasted.location.translate(ModulePopup.DUPLICATE_TRANSLATION, ModulePopup.DUPLICATE_TRANSLATION);
-                        if (pasteBin.isTopModule()) {
-                            modules.add(pasted);
-                        } else {
-                            pasteBin.parent.addSubmodule(pasted);
-                        }
+                        addModule(pasted);
+                        moveModule(pasted, pasted.parent);
                         pasteBin = pasted;
-                        modified = true;
                     } catch (CloneNotSupportedException ex) {
                         System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                     }
@@ -242,13 +224,8 @@ public class Canvas extends ViewportPanel {
                     try {
                         DrawModule dupe = (DrawModule) selected.clone();
                         dupe.location.translate(ModulePopup.DUPLICATE_TRANSLATION, ModulePopup.DUPLICATE_TRANSLATION);
-                        if (selected.isTopModule()) {
-                            modules.add(dupe);
-                        } else {
-                            selected.parent.addSubmodule(dupe);
-                        }
+                        addModule(dupe, selected.parent);
                         selected = dupe;
-                        modified = true;
                     } catch (CloneNotSupportedException ex) {
                         System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                     }
@@ -292,6 +269,84 @@ public class Canvas extends ViewportPanel {
         }, 0, NAV_UPDATE_PERIOD_MS, TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * Adds a module to this Canvas
+     * 
+     * @param module The module to be added
+     */
+    public void addModule(DrawModule module) {
+        modules.add(module);
+        modified = true;
+    }
+    
+    // 
+    /**
+     * Adds a module to the specified parent module. If parent is null, then
+     * the module will be added to the canvas instead.
+     * 
+     * @param module The module to be added
+     * @param parent The parent under which the module will be added
+     */
+    public void addModule(DrawModule module, DrawModule parent) {
+        if (parent == null) {
+            addModule(module);
+        } else {
+            parent.addSubmodule(module);
+        }
+        modified = true;
+    }
+    
+    /**
+     * Removes a module.
+     * 
+     * @param module The module that will be removed.
+     */
+    public void removeModule(DrawModule module) {
+        if (selected.isTopModule()) {
+            modules.remove(module);
+        } else {
+            module.parent.deleteSubmodule(module);
+        }
+        modified = true;
+    }
+    
+    /**
+     * Moves a module from its current context to another
+     * 
+     * @param module The module that will be moved
+     * @param parent The parent under which the module will be moved
+     */
+    public void moveModule(DrawModule module, DrawModule parent) {
+        removeModule(module);
+        parent.addSubmodule(module);
+        modified = true;
+    }
+    
+    public void bringModuleToFront(DrawModule module) {
+        if (selected.isTopModule()) {
+            modules.remove(selected);
+            modules.addLast(selected);
+        } else {
+            selected.parent.submodules.remove(selected);
+            selected.parent.submodules.addLast(selected);
+        }
+    }
+    
+    public void bringModuleToBack(DrawModule module) {
+        if (selected.isTopModule()) {
+            modules.remove(selected);
+            modules.addFirst(selected);
+        } else {
+            selected.parent.submodules.remove(selected);
+            selected.parent.submodules.addFirst(selected);
+        }
+    }
+    
+    public boolean validateModules() {
+        return modules.stream().allMatch((t) -> t.validate());
+    }
+    
+    @Override
     public void loadModule(Module module) {
         DrawModule mod = new DrawModule(this, (DrawModule)(null), module);
         modules.add(mod);
@@ -368,20 +423,9 @@ public class Canvas extends ViewportPanel {
     public void handleMouseReleasedEvent(MouseEvent evt) {
         if (evt.getButton() == MOUSE_SELECT_BUTTON) {
             if (hoverModule != null && selected != null && hoverModule != selected && selected.parent != hoverModule) {
-                
-                if (selected.isTopModule()) {
-                    synchronized (modules) {
-                        modules.remove(selected);
-                    }
-                } else {
-                    synchronized (selected.parent.submodules) {
-                        selected.parent.submodules.remove(selected);
-                    }
-                }
-                modified = true;
-                
                 selected.location = selected.getModuleOffset().subtract(hoverModule.getModuleOffset());
-                hoverModule.addSubmodule(selected);
+                // FIXME jordand : needs synchronization still?
+                moveModule(selected, hoverModule);
                 hoverModule.resize();
             }
             if (hoverPort != null && selectedPort != null && hoverPort != selectedPort) {

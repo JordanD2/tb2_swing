@@ -183,13 +183,7 @@ public class ModulePopup extends JPopupMenu{
             try {
                 DrawModule duplicated = (DrawModule)canvas.selected.clone();
                 duplicated.location.translate(DUPLICATE_TRANSLATION, DUPLICATE_TRANSLATION);
-                if (canvas.selected.isTopModule()) {
-                    canvas.modules.add(duplicated);
-                    canvas.modified = true;
-                } else {
-                    canvas.selected.parent.addSubmodule(duplicated);
-                }
-                
+                canvas.addModule(duplicated, canvas.selected);
                 canvas.repaint();
             } catch (CloneNotSupportedException ex) {
                 System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -200,18 +194,11 @@ public class ModulePopup extends JPopupMenu{
         cutItem.setAccelerator(KeyStroke.getKeyStroke('X', Canvas.EDIT_MODIFIER_MASK));
         cutItem.addActionListener((e) -> {
             canvas.pasteBin = canvas.selected;
-            
-            if (canvas.selected.isTopModule()) {
-                canvas.modules.remove(canvas.selected);
-                canvas.modified = true;
-            } else {
-                canvas.selected.parent.deleteSubmodule(canvas.selected);
-            }
+            canvas.removeModule(canvas.selected);
             canvas.selected = null;
             canvas.repaint();
         });
         
-
         JMenuItem copyItem = this.add("Copy");
         copyItem.setAccelerator(KeyStroke.getKeyStroke('C', Canvas.EDIT_MODIFIER_MASK));
         copyItem.addActionListener((e) -> {
@@ -223,18 +210,12 @@ public class ModulePopup extends JPopupMenu{
         pasteItem.addActionListener((e) -> {
             if (canvas.pasteBin != null) {
                 try {
-                        DrawModule pasted = (DrawModule) canvas.pasteBin.clone();
-                        final RealPoint pastedLoc = new RealPoint(clickLocation).inverseScaleBy(canvas.scaleFactor).subtract(canvas.selected.getModuleOffset()).add(canvas.offset);
-                        pasted.location.setLocation(pastedLoc.x, pastedLoc.y); 
-                        
-                        if (canvas.selected == null) {
-                            canvas.modules.add(pasted);
-                            canvas.modified = true;
-                        } else {
-                            canvas.selected.addSubmodule(pasted);
-                        }
-                    } catch (CloneNotSupportedException ex) {
-                        System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                    DrawModule pasted = (DrawModule) canvas.pasteBin.clone();
+                    final RealPoint pastedLoc = new RealPoint(clickLocation).inverseScaleBy(canvas.scaleFactor).subtract(canvas.selected.getModuleOffset()).add(canvas.offset);
+                    pasted.location.setLocation(pastedLoc.x, pastedLoc.y); 
+                    canvas.addModule(pasted, canvas.selected);
+                } catch (CloneNotSupportedException ex) {
+                    System.getLogger(ModulePopup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
                 canvas.repaint();
             }
@@ -243,12 +224,7 @@ public class ModulePopup extends JPopupMenu{
         JMenuItem deleteItem = this.add("Delete");
         deleteItem.setAccelerator(KeyStroke.getKeyStroke("DELETE"));
         deleteItem.addActionListener((e) -> {
-            if (canvas.selected.isTopModule()) {
-                canvas.modules.remove(canvas.selected);
-                canvas.modified = true;
-            } else {
-                canvas.selected.parent.deleteSubmodule(canvas.selected);
-            }
+            canvas.removeModule(canvas.selected);
             canvas.selected = null;
             canvas.repaint();
         });
@@ -256,24 +232,12 @@ public class ModulePopup extends JPopupMenu{
         this.addSeparator();
         
         this.add("Send to Back").addActionListener((e) -> {
-            if (canvas.selected.isTopModule()) {
-                canvas.modules.remove(canvas.selected);
-                canvas.modules.addFirst(canvas.selected);
-            } else {
-                canvas.selected.parent.submodules.remove(canvas.selected);
-                canvas.selected.parent.submodules.addFirst(canvas.selected);
-            }
+            canvas.bringModuleToBack(canvas.selected);
             canvas.repaint();
         });
         
         this.add("Bring to Front").addActionListener((e) -> {
-            if (canvas.selected.isTopModule()) {
-                canvas.modules.remove(canvas.selected);
-                canvas.modules.addLast(canvas.selected);
-            } else {
-                canvas.selected.parent.submodules.remove(canvas.selected);
-                canvas.selected.parent.submodules.addLast(canvas.selected);
-            }
+            canvas.bringModuleToFront(canvas.selected);
             canvas.repaint();
         });
         
