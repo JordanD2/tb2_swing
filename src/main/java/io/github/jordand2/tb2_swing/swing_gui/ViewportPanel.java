@@ -15,10 +15,12 @@
  */
 package io.github.jordand2.tb2_swing.swing_gui;
 
+import io.github.jordand2.tb2_swing.core.ConfigField;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JPanel;
 import io.github.jordand2.tb2_swing.core.Module;
+import java.util.List;
 
 /**
  *
@@ -39,7 +41,7 @@ public abstract class ViewportPanel extends JPanel {
     // Use to turn canvas points into screen points
     double scaleFactor = DEFAULT_SCALE_FACTOR;
     
-    boolean modified = false;
+    protected boolean modified = false;
     
     DrawModule selected = null;
     DrawModule hoverModule = null;
@@ -88,6 +90,12 @@ public abstract class ViewportPanel extends JPanel {
     }
     
     public abstract void loadModule(Module module);
+    
+    public void editModule(DrawModule module, String newName, String newType) {
+        module.name = newName;
+        module.type = newType;
+        modified = true;
+    }
     
     public void fillLineArrow(Graphics g, double x1, double y1, double x2, double y2) {
         final double arrowSize = (DrawModule.ARROW_SIZE);

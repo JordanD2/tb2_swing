@@ -60,15 +60,15 @@ public class DrawModule implements Cloneable {
     boolean hidePortLabels = false;
     boolean hideInternals = false;
     
-    final ArrayList<DrawPort> inputPorts  = new ArrayList<>();
-    final ArrayList<DrawPort> outputPorts = new ArrayList<>();
+    protected final ArrayList<DrawPort> inputPorts  = new ArrayList<>();
+    protected final ArrayList<DrawPort> outputPorts = new ArrayList<>();
     
-    final Deque<DrawModule> submodules = new ArrayDeque<>();
+    protected final Deque<DrawModule> submodules = new ArrayDeque<>();
     
-    final ArrayList<DrawConnection> connections = new ArrayList<>();
+    protected final ArrayList<DrawConnection> connections = new ArrayList<>();
     
-    final ArrayList<ConfigField> configFields = new ArrayList<>();
-    final ArrayList<ConfigAssign> configAssigns = new ArrayList<>();
+    protected final ArrayList<ConfigField> configFields = new ArrayList<>();
+    protected final ArrayList<ConfigAssign> configAssigns = new ArrayList<>();
     
     public DrawModule(ViewportPanel canvas, String name) {
         this.canvas = canvas;
@@ -182,7 +182,6 @@ public class DrawModule implements Cloneable {
             submodules.add(module);
         }
         module.parent = this;
-        canvas.modified = true;
     }
     
     public void deleteSubmodule(DrawModule module) {
@@ -190,6 +189,17 @@ public class DrawModule implements Cloneable {
             submodules.remove(module);
             connections.removeIf((conn) -> (conn.sourcePort.parent == module || conn.destPort.parent == module));
         }
+    }
+    
+    public void setConfigFields(List<ConfigField> newFields) {
+        configFields.clear();
+        configFields.addAll(newFields);
+        canvas.modified = true;
+    }
+    
+    public void setConfigAssigns(List<ConfigAssign> newAssigns) {
+        configAssigns.clear();
+        configAssigns.addAll(newAssigns);
         canvas.modified = true;
     }
     
@@ -206,7 +216,6 @@ public class DrawModule implements Cloneable {
         } else {
             addPort(name, dataType, type, outputPorts.size());
         }
-        canvas.modified = true;
     }
     
     /**
@@ -218,14 +227,9 @@ public class DrawModule implements Cloneable {
      * @param portIndex Specify the port index to be assigned to this port
      */
     public void addPort(String name, String dataType, int type, int portIndex) {
-        if (type == DrawPort.INPUT_PORT) {
-            inputPorts.add(new DrawPort(canvas, this, type, name, dataType));
-            inputPorts.getLast().idx = portIndex;
-        } else {
-            outputPorts.add(new DrawPort(canvas, this, type, name, dataType));
-            outputPorts.getLast().idx = portIndex;
+        if (canvas instanceof Canvas c) {
+            c.applyModification(new AddPort(c, new DrawPort(c, this, type, name, dataType)));
         }
-        canvas.modified = true;
     }
     
     /**
@@ -235,14 +239,9 @@ public class DrawModule implements Cloneable {
      * @param port The port to be removed
      */
     public void deletePort(DrawPort port) {
-        inputPorts.remove(port);
-        outputPorts.remove(port);
-        
-        connections.removeIf((conn) -> conn.sourcePort == port || conn.destPort == port);
-        if (this.parent != null) {
-            parent.connections.removeIf((conn) -> conn.sourcePort == port || conn.destPort == port);
+        if (canvas instanceof Canvas c) {
+            c.applyModification(new RemovePort(c, this, port));
         }
-        canvas.modified = true;
     }
     
     public String getPathTo(DrawPort port) {

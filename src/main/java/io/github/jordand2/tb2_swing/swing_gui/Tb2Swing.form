@@ -92,8 +92,10 @@
                   <Connection code="KeyStroke.getKeyStroke(&apos;Z&apos;, Canvas.EDIT_MODIFIER_MASK)" type="code"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Undo"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="undoItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="redoItem">
               <Properties>
@@ -101,8 +103,10 @@
                   <Connection code="KeyStroke.getKeyStroke(&apos;Y&apos;, Canvas.EDIT_MODIFIER_MASK)" type="code"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Redo"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="redoItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="editSeparator1">
             </MenuItem>

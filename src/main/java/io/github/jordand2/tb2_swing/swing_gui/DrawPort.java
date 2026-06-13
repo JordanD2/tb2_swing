@@ -151,8 +151,8 @@ public class DrawPort implements Cloneable {
     }
 
     @Override
-    protected Object clone(){
-        DrawPort clone = new DrawPort(canvas, parent, type, name, dataType);
+    protected Object clone() throws CloneNotSupportedException {
+        DrawPort clone = (DrawPort) super.clone();
         clone.parent = null;
         return clone;
     }

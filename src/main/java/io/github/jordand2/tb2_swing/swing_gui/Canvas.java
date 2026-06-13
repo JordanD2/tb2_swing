@@ -32,6 +32,7 @@ import javax.swing.KeyStroke;
 import io.github.jordand2.tb2_swing.core.Module;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -55,14 +56,17 @@ public class Canvas extends ViewportPanel {
     
     protected final Deque<DrawModule> modules = new ArrayDeque<>();
     
-    final ModulePopup modulePopup;
-    final CanvasPopup canvasPopup;
-    final PortPopup portPopup;
+    protected final ModulePopup modulePopup;
+    protected final CanvasPopup canvasPopup;
+    protected final PortPopup portPopup;
     
-    boolean navUp;
-    boolean navDown;
-    boolean navLeft;
-    boolean navRight;
+    protected final Stack<Modification> undoStack = new Stack<>();
+    protected final Stack<Modification> redoStack = new Stack<>();
+    
+    protected boolean navUp;
+    protected boolean navDown;
+    protected boolean navLeft;
+    protected boolean navRight;
     
     public Canvas() {
         super();
@@ -269,14 +273,41 @@ public class Canvas extends ViewportPanel {
         }, 0, NAV_UPDATE_PERIOD_MS, TimeUnit.MILLISECONDS);
     }
     
+    public void applyModification(Modification mod) {
+        mod.apply();
+        undoStack.push(mod);
+        redoStack.clear();
+        modified = true;
+        repaint();
+    }
+    
+    public void undo() {
+        if (!undoStack.empty()) {
+            Modification mod = undoStack.pop();
+            mod.revert();
+            redoStack.push(mod);
+            modified = true;
+            repaint();
+        }
+    }
+    
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            Modification mod = redoStack.pop();
+            mod.apply();
+            undoStack.push(mod);
+            modified = true;
+            repaint();
+        }
+    }
+    
     /**
      * Adds a module to this Canvas
      * 
      * @param module The module to be added
      */
     public void addModule(DrawModule module) {
-        modules.add(module);
-        modified = true;
+        applyModification(new AddModule(this, module, null));
     }
     
     // 
@@ -288,12 +319,7 @@ public class Canvas extends ViewportPanel {
      * @param parent The parent under which the module will be added
      */
     public void addModule(DrawModule module, DrawModule parent) {
-        if (parent == null) {
-            addModule(module);
-        } else {
-            parent.addSubmodule(module);
-        }
-        modified = true;
+        applyModification(new AddModule(this, module, parent));
     }
     
     /**
@@ -302,12 +328,7 @@ public class Canvas extends ViewportPanel {
      * @param module The module that will be removed.
      */
     public void removeModule(DrawModule module) {
-        if (selected.isTopModule()) {
-            modules.remove(module);
-        } else {
-            module.parent.deleteSubmodule(module);
-        }
-        modified = true;
+        applyModification(new RemoveModule(this, module));
     }
     
     /**
@@ -317,9 +338,7 @@ public class Canvas extends ViewportPanel {
      * @param parent The parent under which the module will be moved
      */
     public void moveModule(DrawModule module, DrawModule parent) {
-        removeModule(module);
-        parent.addSubmodule(module);
-        modified = true;
+        applyModification(new MoveModule(this, module, parent));
     }
     
     public void bringModuleToFront(DrawModule module) {
@@ -330,6 +349,7 @@ public class Canvas extends ViewportPanel {
             selected.parent.submodules.remove(selected);
             selected.parent.submodules.addLast(selected);
         }
+        modified = true;
     }
     
     public void bringModuleToBack(DrawModule module) {
@@ -340,8 +360,15 @@ public class Canvas extends ViewportPanel {
             selected.parent.submodules.remove(selected);
             selected.parent.submodules.addFirst(selected);
         }
+        modified = true;
     }
     
+    @Override
+    public void editModule(DrawModule module, String newName, String newType) {
+        applyModification(new EditModule(this, module, newName, newType));
+    }
+    
+
     public boolean validateModules() {
         return modules.stream().allMatch((t) -> t.validate());
     }
@@ -431,17 +458,13 @@ public class Canvas extends ViewportPanel {
             if (hoverPort != null && selectedPort != null && hoverPort != selectedPort) {
                 // TODO: simplify and/or add error checking
                 if (selectedPort.parent == hoverPort.parent) {
-                    selectedPort.parent.connections.add(new DrawConnection(selectedPort.parent, selectedPort, hoverPort));
-                    modified = true;
+                    applyModification(new AddConnection(this, selectedPort.parent, selectedPort, hoverPort));
                 } else if (selectedPort.parent == hoverPort.parent.parent) {
-                    selectedPort.parent.connections.add(new DrawConnection(selectedPort.parent, selectedPort, hoverPort));
-                    modified = true;
+                    applyModification(new AddConnection(this, selectedPort.parent, selectedPort, hoverPort));
                 } else if (selectedPort.parent.parent == hoverPort.parent) {
-                    hoverPort.parent.connections.add(new DrawConnection(hoverPort.parent, selectedPort, hoverPort));
-                    modified = true;
+                    applyModification(new AddConnection(this, hoverPort.parent, selectedPort, hoverPort));
                 } else if (hoverPort.parent.parent != null && selectedPort.parent.parent != null && selectedPort.parent.parent == hoverPort.parent.parent) {
-                    selectedPort.parent.parent.connections.add(new DrawConnection(selectedPort.parent.parent, selectedPort, hoverPort));
-                    modified = true;
+                    applyModification(new AddConnection(this, selectedPort.parent.parent, selectedPort, hoverPort));
                 } else {
                     logger.log(Level.SEVERE, "Attempted to add bad connection!");
                 }

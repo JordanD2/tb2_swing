@@ -224,12 +224,12 @@ public class Tb2Swing extends javax.swing.JFrame {
 
         undoItem.setAccelerator(KeyStroke.getKeyStroke('Z', Canvas.EDIT_MODIFIER_MASK));
         undoItem.setText("Undo");
-        undoItem.setEnabled(false);
+        undoItem.addActionListener(this::undoItemActionPerformed);
         editMenu.add(undoItem);
 
         redoItem.setAccelerator(KeyStroke.getKeyStroke('Y', Canvas.EDIT_MODIFIER_MASK));
         redoItem.setText("Redo");
-        redoItem.setEnabled(false);
+        redoItem.addActionListener(this::redoItemActionPerformed);
         editMenu.add(redoItem);
         editMenu.add(editSeparator1);
 
@@ -572,6 +572,18 @@ public class Tb2Swing extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_previewTypeItemActionPerformed
+
+    private void undoItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            c.undo();
+        }
+    }//GEN-LAST:event_undoItemActionPerformed
+
+    private void redoItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoItemActionPerformed
+        if (canvas instanceof Canvas c) {
+            c.redo();
+        }
+    }//GEN-LAST:event_redoItemActionPerformed
     
     /**
      * @param args the command line arguments

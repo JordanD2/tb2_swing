@@ -283,9 +283,7 @@ public class ConfigFieldEditor extends JDialog {
         });
         saveButton.addActionListener((e) -> {
             Logger.getLogger(ConfigFieldEditor.class.getName()).log(Level.INFO, String.format("Updating config fields for %s...", target.type));
-            target.configFields.clear();
-            target.configFields.addAll(tablePanel.getConfigFields());
-            target.canvas.modified = true;
+            target.setConfigFields(tablePanel.getConfigFields());
             dispose();
         });
         buttonPanel.add(cancelButton);
